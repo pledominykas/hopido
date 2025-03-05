@@ -1,15 +1,4 @@
-interface Square {
-  x: number;
-  y: number;
-  value: number | null;
-  isCurrent: boolean;
-  isValidMove: boolean;
-}
-
-interface Grid {
-  size: number;
-  squares: Square[][];
-}
+import { SquareState, type Grid, type Square } from './game-state.svelte';
 
 export const generateGrid = (size: number): Grid => {
   const squares = [];
@@ -18,7 +7,7 @@ export const generateGrid = (size: number): Grid => {
     const row: Square[] = [];
 
     for (let y = 0; y < size; y++) {
-      row.push({ value: null, x, y, isCurrent: false, isValidMove: true });
+      row.push({ value: null, x, y, state: SquareState.ValidMove });
     }
 
     squares.push(row);
@@ -30,17 +19,18 @@ export const generateGrid = (size: number): Grid => {
   };
 };
 
-const getValidMoves = (grid: Grid): Grid => {
-  const currentSquare = grid.squares.flat().find((s) => s.isCurrent);
-
+export const setValidMoves = (grid: Grid, currentSquare: Square) => {
   if (currentSquare === undefined) {
-    return getModifiedGrid(grid, (square) => ({ ...square, isValidMove: true }));
+    return modifyGridSquares(grid, (square) => (square.state = SquareState.ValidMove));
   }
 
-  return getModifiedGrid(grid, (square) => ({
-    ...square,
-    isValidMove: isValidMove(currentSquare, square)
-  }));
+  return modifyGridSquares(grid, (square) => {
+    if (isValidMove(currentSquare, square)) {
+      square.state = SquareState.ValidMove;
+    } else {
+      square.state = SquareState.None;
+    }
+  });
 };
 
 const isValidMove = (currentSquare: Square, squareToCheck: Square): boolean => {
@@ -52,13 +42,13 @@ const isValidMove = (currentSquare: Square, squareToCheck: Square): boolean => {
     return true;
   }
 
-  if (squareToCheck.x === currentSquare.x && Math.abs(squareToCheck.y - currentSquare.y)) {
+  if (squareToCheck.x === currentSquare.x && Math.abs(squareToCheck.y - currentSquare.y) === 3) {
     return true;
   }
 
   if (
-    Math.abs(squareToCheck.x - squareToCheck.x) === 2 &&
-    Math.abs(squareToCheck.y - squareToCheck.x) === 2
+    Math.abs(squareToCheck.x - currentSquare.x) === 2 &&
+    Math.abs(squareToCheck.y - currentSquare.y) === 2
   ) {
     return true;
   }
@@ -66,19 +56,10 @@ const isValidMove = (currentSquare: Square, squareToCheck: Square): boolean => {
   return false;
 };
 
-const getModifiedGrid = (grid: Grid, modifier: (square: Square) => Square): Grid => {
-  const squares: Square[][] = [];
-
-  for (let y = 0; y < grid.size; y++) {
-    const row: Square[] = [];
-
-    for (let x = 0; x < grid.size; x++) {
-      row.push(modifier(grid.squares[x][y]));
+const modifyGridSquares = (grid: Grid, modifier: (square: Square) => void) => {
+  for (let x = 0; x < grid.size; x++) {
+    for (let y = 0; y < grid.size; y++) {
+      modifier(grid.squares[x][y]);
     }
   }
-
-  return {
-    size: grid.size,
-    squares
-  };
 };

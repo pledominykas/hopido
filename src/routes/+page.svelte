@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { generateGrid } from '$lib/gridUtils';
+  import { gameState, handleSquareClicked, SquareState } from '$lib/game-state.svelte';
 
   const gridSizeClasses: Record<number, string> = {
     [1]: 'grid-cols-1 grid-rows-1',
@@ -14,17 +14,24 @@
     [10]: 'grid-cols-10 grid-rows-10'
   };
 
-  const grid = $state(generateGrid(6));
+  const squareColorClasses: Record<SquareState, string> = {
+    [SquareState.Current]: 'border-green-400',
+    [SquareState.ValidMove]: 'border-blue-400',
+    [SquareState.None]: 'border-gray-200'
+  };
 </script>
 
-<div class="grid {gridSizeClasses[grid.size]} text-xl font-medium text-black">
-  {#each grid.squares as row}
+<div class="grid {gridSizeClasses[gameState.grid.size]} text-xl font-medium text-black">
+  {#each gameState.grid.squares as row}
     {#each row as square}
-      <div class="flex aspect-1/1 items-center justify-center bg-white p-4 outline">
+      <div
+        onclick={() => handleSquareClicked(square)}
+        class="sq flex aspect-1/1 items-center justify-center border bg-white p-4 {squareColorClasses[
+          square.state
+        ]}"
+      >
         {#if square.value !== null}
           {square.value}
-        {:else}
-          #
         {/if}
       </div>
     {/each}
