@@ -15,18 +15,22 @@
   };
 
   const squareColorClasses: Record<SquareState, string> = {
-    [SquareState.Current]: 'border-green-400',
-    [SquareState.ValidMove]: 'border-blue-400',
-    [SquareState.None]: 'border-gray-200'
+    [SquareState.Current]: 'outline-green-400 z-1',
+    [SquareState.ValidMove]: 'outline-blue-400 z-1',
+    [SquareState.None]: 'outline-gray-200 z-0'
   };
 </script>
 
-<div class="grid {gridSizeClasses[gameState.grid.size]} text-xl font-medium text-black">
+<div
+  class="grid {gridSizeClasses[
+    gameState.grid.size
+  ]} aspect-square gap-[1px] font-medium text-black portrait:w-full landscape:h-full"
+>
   {#each gameState.grid.squares as row}
     {#each row as square}
       <div
         onclick={() => handleSquareClicked(square)}
-        class="sq flex aspect-1/1 items-center justify-center border bg-white p-4 {squareColorClasses[
+        class="flex aspect-square items-center justify-center outline {squareColorClasses[
           square.state
         ]}"
       >
