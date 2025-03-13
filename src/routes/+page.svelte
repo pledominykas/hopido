@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { gameState, handleSquareClicked, SquareState } from '$lib/game-state.svelte';
+  import { gameState, handleSquareClicked } from '$lib/game-state.svelte';
+  import { SquareState } from '$lib/grid-utils';
 
   const gridSizeClasses: Record<number, string> = {
     [1]: 'grid-cols-1 grid-rows-1',

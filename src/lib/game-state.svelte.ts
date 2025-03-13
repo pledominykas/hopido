@@ -1,22 +1,5 @@
-import { generateGrid, setValidMoves } from './gridUtils';
-
-export enum SquareState {
-  Current,
-  ValidMove,
-  None
-}
-
-export interface Square {
-  x: number;
-  y: number;
-  value: number | null;
-  state: SquareState;
-}
-
-export interface Grid {
-  size: number;
-  squares: Square[][];
-}
+import { generateGrid, SquareState, type Grid, type Square } from './grid-utils';
+import { setCurrentSquare } from './move-utils';
 
 export interface GameState {
   currentNumber: number;
@@ -24,18 +7,16 @@ export interface GameState {
 }
 
 export const gameState: GameState = $state({
-  currentNumber: 1,
+  currentNumber: 0,
   grid: generateGrid(10)
 });
 
 export const handleSquareClicked = (square: Square) => {
-  if (square.state != SquareState.ValidMove) {
+  if (square.state !== SquareState.ValidMove) {
     return;
   }
 
-  setValidMoves(gameState.grid, square);
+  setCurrentSquare(gameState.grid, square, gameState.currentNumber + 1);
 
-  square.state = SquareState.Current;
-  square.value = gameState.currentNumber;
-  gameState.currentNumber++;
+  gameState.currentNumber += 1;
 };
