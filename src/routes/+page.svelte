@@ -16,9 +16,10 @@
   };
 
   const squareColorClasses: Record<SquareState, string> = {
-    [SquareState.Current]: 'outline-green-400 z-1',
-    [SquareState.ValidMove]: 'outline-blue-400 z-1',
-    [SquareState.None]: 'outline-gray-200 z-0'
+    [SquareState.Current]: 'outline outline-green-400 z-1',
+    [SquareState.ValidMove]: 'outline outline-blue-400 z-1',
+    [SquareState.Empty]: 'outline outline-gray-200 z-0',
+    [SquareState.Unplayable]: ''
   };
 </script>
 
@@ -31,9 +32,7 @@
     {#each row as square}
       <div
         onclick={() => handleSquareClicked(square)}
-        class="flex aspect-square items-center justify-center outline {squareColorClasses[
-          square.state
-        ]}"
+        class="flex aspect-square items-center justify-center {squareColorClasses[square.state]}"
       >
         {#if square.value !== null}
           {square.value}

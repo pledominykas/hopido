@@ -15,8 +15,8 @@ export const setCurrentSquare = (grid: Grid, currentSquare: Square, currentNumbe
   modifyGridSquares(grid, (square) => {
     if (isValidMove(currentSquare, square)) {
       square.state = SquareState.ValidMove;
-    } else {
-      square.state = SquareState.None;
+    } else if (square.state !== SquareState.Unplayable) {
+      square.state = SquareState.Empty;
     }
   });
 
@@ -26,8 +26,21 @@ export const setCurrentSquare = (grid: Grid, currentSquare: Square, currentNumbe
   return grid;
 };
 
-export const squareAllowsMovingTo = (square: Square) => {
-  if (square.value !== null) {
+export const getPossibleMovesFromSquare = (square: Square, grid: Grid): Square[] => {
+  const nextMoveCoordinates = VALID_MOVES.map((move) => ({
+    x: square.x + move.dx,
+    y: square.y + move.dy
+  })).filter((coord) => coord.x >= 0 && coord.x < grid.size && coord.y >= 0 && coord.y < grid.size);
+
+  const nextMoveSquares = nextMoveCoordinates
+    .map((coord) => grid.squares[coord.x][coord.y])
+    .filter((square) => squareAllowsMovingTo(square));
+
+  return nextMoveSquares;
+};
+
+const squareAllowsMovingTo = (square: Square) => {
+  if (square.value !== null || square.state === SquareState.Unplayable) {
     return false;
   }
 

@@ -1,7 +1,8 @@
 export enum SquareState {
   Current,
   ValidMove,
-  None
+  Empty,
+  Unplayable
 }
 
 export interface Square {
