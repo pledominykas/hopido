@@ -15,11 +15,29 @@ const countValidSquares = (grid: Grid): number => {
   }, 0);
 };
 
-const solve = (currentSquare: Square, grid: Grid, lastNumber: number): GridSolution => {
+//TODO: move inside solveGrid to not pass everything in arguments
+const solve = (
+  currentSquare: Square,
+  grid: Grid,
+  lastNumber: number,
+  searchInfo: {
+    currentSearchChecks: number;
+    maxSearchChecks: number;
+  }
+): GridSolution => {
   if (currentSquare.value === null) {
     throw new Error(
       'Current square value cannot be null. Check if value is updated before calling solve.'
     );
+  }
+
+  searchInfo.currentSearchChecks += 1;
+  console.log(searchInfo.currentSearchChecks);
+  if (searchInfo.currentSearchChecks >= searchInfo.maxSearchChecks) {
+    return {
+      exists: false,
+      solvedGrid: undefined
+    };
   }
 
   const currentPossibleMoves = getPossibleMovesFromSquare(currentSquare, grid);
@@ -56,7 +74,7 @@ const solve = (currentSquare: Square, grid: Grid, lastNumber: number): GridSolut
       };
     }
 
-    const solution = solve(move.square, grid, lastNumber);
+    const solution = solve(move.square, grid, lastNumber, searchInfo);
 
     if (solution.exists) {
       return solution;
@@ -71,9 +89,17 @@ const solve = (currentSquare: Square, grid: Grid, lastNumber: number): GridSolut
   };
 };
 
-export const solveGrid = (startingSquare: Square, grid: Grid): GridSolution => {
+//TODO: add max depth to not get stuck solving for a long time
+export const solveGrid = (
+  startingSquare: Square,
+  grid: Grid,
+  maxSearchChecks = 10000
+): GridSolution => {
   const gridClone = cloneGrid(grid);
   const lastNumber = countValidSquares(gridClone);
 
-  return solve(startingSquare, gridClone, lastNumber);
+  return solve(startingSquare, gridClone, lastNumber, {
+    currentSearchChecks: 0,
+    maxSearchChecks: maxSearchChecks
+  });
 };
